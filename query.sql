@@ -7,7 +7,7 @@ values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14);
 select rpt_type,
        reported_time,
        created_at,
-       var_col as speed,
+       speed,
        dist_from_location,
        heading_from_location,
        county,
@@ -18,7 +18,7 @@ select rpt_type,
        comments,
        nws_office,
        location
-from reports
+from wind_reports
 where reported_time = $1
 order by reported_time;
 
@@ -26,7 +26,7 @@ order by reported_time;
 select rpt_type,
        reported_time,
        created_at,
-       var_col as speed,
+       speed,
        dist_from_location,
        heading_from_location,
        county,
@@ -37,7 +37,7 @@ select rpt_type,
        comments,
        nws_office,
        location
-from reports
+from wind_reports
 where county = $1
     AND "state" = $2
 order by reported_time;
@@ -46,8 +46,8 @@ order by reported_time;
 select rpt_type,
        reported_time,
        created_at,
-var_col as speed,
-dist_from_location,
+       speed,
+       dist_from_location,
        heading_from_location,
        county,
        "state",
@@ -57,7 +57,7 @@ dist_from_location,
        comments,
        nws_office,
        location
-from reports
+from wind_reports
 where "state" = $1
 order by reported_time;
 
@@ -66,7 +66,7 @@ order by reported_time;
 select rpt_type,
        reported_time,
        created_at,
-       var_col as speed,
+       speed,
        dist_from_location,
        heading_from_location,
        county,
@@ -77,7 +77,7 @@ select rpt_type,
        comments,
        nws_office,
        location
-from reports
+from wind_reports
 order by reported_time;
 
 
@@ -86,7 +86,7 @@ order by reported_time;
 select rpt_type,
        reported_time,
        created_at,
-       var_col as "size",
+       "size",
        dist_from_location,
        heading_from_location,
        county,
@@ -97,7 +97,7 @@ select rpt_type,
        comments,
        nws_office,
        location
-from reports
+from hail_reports
 where reported_time = $1
 order by reported_time;
 
@@ -105,7 +105,7 @@ order by reported_time;
 select rpt_type,
        reported_time,
        created_at,
-       var_col as "size",
+       "size",
        dist_from_location,
        heading_from_location,
        county,
@@ -116,7 +116,7 @@ select rpt_type,
        comments,
        nws_office,
        location
-from reports
+from hail_reports
 where county = $1
     AND "state" = $2
 order by reported_time;
@@ -125,7 +125,7 @@ order by reported_time;
 select rpt_type,
        reported_time,
        created_at,
-       var_col as "size",
+       "size",
        dist_from_location,
        heading_from_location,
        county,
@@ -136,7 +136,7 @@ select rpt_type,
        comments,
        nws_office,
        location
-from reports
+from hail_reports
 where "state" = $1
 order by reported_time;
 
@@ -145,7 +145,7 @@ order by reported_time;
 select rpt_type,
        reported_time,
        created_at,
-       var_col as "size",
+       "size",
        dist_from_location,
        heading_from_location,
        county,
@@ -156,7 +156,7 @@ select rpt_type,
        comments,
        nws_office,
        location
-from reports
+from hail_reports
 order by reported_time;
 
 
@@ -165,7 +165,7 @@ order by reported_time;
 select rpt_type,
        reported_time,
        created_at,
-       var_col as f_scale,
+       f_scale,
        dist_from_location,
        heading_from_location,
        county,
@@ -176,7 +176,7 @@ select rpt_type,
        comments,
        nws_office,
        location
-from reports
+from tornado_reports
 where reported_time = $1
 order by reported_time;
 
@@ -184,7 +184,7 @@ order by reported_time;
 select rpt_type,
        reported_time,
        created_at,
-       var_col as f_scale,
+       f_scale,
        dist_from_location,
        heading_from_location,
        county,
@@ -195,7 +195,7 @@ select rpt_type,
        comments,
        nws_office,
        location
-from reports
+from tornado_reports
 where county = $1
     AND "state" = $2
 order by reported_time;
@@ -204,7 +204,7 @@ order by reported_time;
 select rpt_type,
        reported_time,
        created_at,
-       var_col as f_scale,
+       f_scale,
        dist_from_location,
        heading_from_location,
        county,
@@ -215,7 +215,7 @@ select rpt_type,
        comments,
        nws_office,
        location
-from reports
+from tornado_reports
 where "state" = $1
 order by reported_time;
 
