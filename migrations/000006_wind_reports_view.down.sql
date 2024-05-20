@@ -1,0 +1,1 @@
+Drop View if exists wind_reports;
