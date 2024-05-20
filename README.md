@@ -8,8 +8,7 @@ Welcome to the Stormsync Database repository. This repository contains a Go pack
 
 
 ## DB Schema
-![DBSchema](https://github.com/stormsync/database/weather_db_schema.png)
-
+![DBSchema](https://github.com/stormsync/database/blob/main/weather_db_schema.png?raw=true)
 
 ## Table of Contents
 
@@ -56,127 +55,19 @@ You can configure the database package using environment variables. Here are the
 
 ## Usage
 
-### Connecting to the Database
 
-To connect to the database, use the following code snippet:
-
-```go
-package main
-
-import (
-    "github.com/stormsync/database"
-    "log"
-)
-
-func main() {
-    config := database.Config{
-        Driver:   "postgres",
-        Host:     "localhost",
-        Port:     5432,
-        User:     "your_username",
-        Password: "your_password",
-        DBName:   "stormsync_db",
-        SSLMode:  "disable",
-    }
-
-    db, err := database.Connect(config)
-    if err != nil {
-        log.Fatalf("Failed to connect to the database: %v", err)
-    }
-
-    defer db.Close()
-    log.Println("Successfully connected to the database")
-}
-```
 
 ### Running Migrations
 
 To run database migrations, use the following code:
 
-```go
-package main
+```bash
+ migrate -source file:./migrations -database  "postgresql://<host>/<dbname>?<params>" up
+ or
+ migrate -source file:./migrations -database  "postgresql://<host>/<dbname>?<params>" down
 
-import (
-    "github.com/stormsync/database"
-    "log"
-)
-
-func main() {
-    config := database.Config{
-        Driver:   "postgres",
-        Host:     "localhost",
-        Port:     5432,
-        User:     "your_username",
-        Password: "your_password",
-        DBName:   "stormsync_db",
-        SSLMode:  "disable",
-    }
-
-    db, err := database.Connect(config)
-    if err != nil {
-        log.Fatalf("Failed to connect to the database: %v", err)
-    }
-
-    defer db.Close()
-
-    if err := database.Migrate(db, "./migrations"); err != nil {
-        log.Fatalf("Failed to run migrations: %v", err)
-    }
-
-    log.Println("Migrations ran successfully")
-}
 ```
 
-### Seeding the Database
-
-To seed the database with initial data, use the following code:
-
-```go
-package main
-
-import (
-    "github.com/stormsync/database"
-    "log"
-)
-
-func main() {
-    config := database.Config{
-        Driver:   "postgres",
-        Host:     "localhost",
-        Port:     5432,
-        User:     "your_username",
-        Password: "your_password",
-        DBName:   "stormsync_db",
-        SSLMode:  "disable",
-    }
-
-    db, err := database.Connect(config)
-    if err != nil {
-        log.Fatalf("Failed to connect to the database: %v", err)
-    }
-
-    defer db.Close()
-
-    if err := database.Seed(db, "./seeds"); err != nil {
-        log.Fatalf("Failed to seed the database: %v", err)
-    }
-
-    log.Println("Database seeded successfully")
-}
-```
-
-## Contributing
-
-We welcome contributions to the Stormsync Database project. To contribute:
-
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature-branch`).
-3. Make your changes.
-4. Commit your changes (`git commit -m 'Add new feature'`).
-5. Push to the branch (`git push origin feature-branch`).
-6. Open a pull request.
-
-Please ensure your code adheres to our coding standards and includes appropriate tests.
 
 ## License
 
@@ -187,5 +78,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For any questions or feedback, please reach out to us at [support@stormsync.com](mailto:support@stormsync.com) or join our [community forum](https://community.stormsync.com).
 
 ---
-
-Feel free to customize the above template further to match any specific details or preferences you have for your project.
