@@ -54,23 +54,6 @@ func (ns NullReportType) Value() (driver.Value, error) {
 	return string(ns.ReportType), nil
 }
 
-type HailReport struct {
-	RptType             ReportType
-	ReportedTime        pgtype.Timestamptz
-	CreatedAt           pgtype.Timestamptz
-	Size                pgtype.Int4
-	DistFromLocation    int32
-	HeadingFromLocation string
-	County              string
-	State               pgtype.Text
-	Latitude            pgtype.Text
-	Longitude           pgtype.Text
-	EventLocation       interface{}
-	Comments            pgtype.Text
-	NwsOffice           pgtype.Text
-	Location            string
-}
-
 type NwsOffice struct {
 	ID    string
 	City  pgtype.Text
@@ -105,40 +88,6 @@ type SpatialRefSy struct {
 	AuthSrid  pgtype.Int4
 	Srtext    pgtype.Text
 	Proj4text pgtype.Text
-}
-
-type TornadoReport struct {
-	RptType             ReportType
-	ReportedTime        pgtype.Timestamptz
-	CreatedAt           pgtype.Timestamptz
-	FScale              pgtype.Int4
-	DistFromLocation    int32
-	HeadingFromLocation string
-	County              string
-	State               pgtype.Text
-	Latitude            pgtype.Text
-	Longitude           pgtype.Text
-	EventLocation       interface{}
-	Comments            pgtype.Text
-	NwsOffice           pgtype.Text
-	Location            string
-}
-
-type WindReport struct {
-	RptType             ReportType
-	ReportedTime        pgtype.Timestamptz
-	CreatedAt           pgtype.Timestamptz
-	Speed               pgtype.Int4
-	DistFromLocation    int32
-	HeadingFromLocation string
-	County              string
-	State               pgtype.Text
-	Latitude            pgtype.Text
-	Longitude           pgtype.Text
-	EventLocation       interface{}
-	Comments            pgtype.Text
-	NwsOffice           pgtype.Text
-	Location            string
 }
 
 type XrefReportTypeVarCol struct {

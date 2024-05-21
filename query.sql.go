@@ -11,60 +11,6 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const getAllHailReports = `-- name: GetAllHailReports :many
-select rpt_type,
-       reported_time,
-       created_at,
-       "size",
-       dist_from_location,
-       heading_from_location,
-       county,
-       "state",
-       latitude,
-       longitude,
-       event_location,
-       comments,
-       nws_office,
-       location
-from hail_reports
-order by reported_time
-`
-
-func (q *Queries) GetAllHailReports(ctx context.Context) ([]HailReport, error) {
-	rows, err := q.db.Query(ctx, getAllHailReports)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []HailReport
-	for rows.Next() {
-		var i HailReport
-		if err := rows.Scan(
-			&i.RptType,
-			&i.ReportedTime,
-			&i.CreatedAt,
-			&i.Size,
-			&i.DistFromLocation,
-			&i.HeadingFromLocation,
-			&i.County,
-			&i.State,
-			&i.Latitude,
-			&i.Longitude,
-			&i.EventLocation,
-			&i.Comments,
-			&i.NwsOffice,
-			&i.Location,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const getAllReports = `-- name: GetAllReports :many
 select rpt_type,
        reported_time,
@@ -81,7 +27,7 @@ select rpt_type,
        nws_office,
        location
 from reports
-order by reported_time,rpt_type
+order by reported_time
 `
 
 func (q *Queries) GetAllReports(ctx context.Context) ([]Report, error) {
@@ -136,7 +82,7 @@ select rpt_type,
        location
 from reports
 where reported_time = $1
-order by reported_time, rpt_type
+order by reported_time
 `
 
 func (q *Queries) GetAllReportsByDate(ctx context.Context, reportedTime pgtype.Timestamptz) ([]Report, error) {
@@ -174,11 +120,11 @@ func (q *Queries) GetAllReportsByDate(ctx context.Context, reportedTime pgtype.T
 	return items, nil
 }
 
-const getAllWindReports = `-- name: GetAllWindReports :many
+const getAllReportsByTypeByDate = `-- name: GetAllReportsByTypeByDate :many
 select rpt_type,
        reported_time,
        created_at,
-       speed,
+       var_col,
        dist_from_location,
        heading_from_location,
        county,
@@ -189,195 +135,31 @@ select rpt_type,
        comments,
        nws_office,
        location
-from wind_reports
-order by reported_time
-`
-
-func (q *Queries) GetAllWindReports(ctx context.Context) ([]WindReport, error) {
-	rows, err := q.db.Query(ctx, getAllWindReports)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []WindReport
-	for rows.Next() {
-		var i WindReport
-		if err := rows.Scan(
-			&i.RptType,
-			&i.ReportedTime,
-			&i.CreatedAt,
-			&i.Speed,
-			&i.DistFromLocation,
-			&i.HeadingFromLocation,
-			&i.County,
-			&i.State,
-			&i.Latitude,
-			&i.Longitude,
-			&i.EventLocation,
-			&i.Comments,
-			&i.NwsOffice,
-			&i.Location,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getHailReportsByCountyAndState = `-- name: GetHailReportsByCountyAndState :many
-select rpt_type,
-       reported_time,
-       created_at,
-       "size",
-       dist_from_location,
-       heading_from_location,
-       county,
-       "state",
-       latitude,
-       longitude,
-       event_location,
-       comments,
-       nws_office,
-       location
-from hail_reports
-where county = $1
-    AND "state" = $2
-order by reported_time
-`
-
-type GetHailReportsByCountyAndStateParams struct {
-	County string
-	State  pgtype.Text
-}
-
-func (q *Queries) GetHailReportsByCountyAndState(ctx context.Context, arg GetHailReportsByCountyAndStateParams) ([]HailReport, error) {
-	rows, err := q.db.Query(ctx, getHailReportsByCountyAndState, arg.County, arg.State)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []HailReport
-	for rows.Next() {
-		var i HailReport
-		if err := rows.Scan(
-			&i.RptType,
-			&i.ReportedTime,
-			&i.CreatedAt,
-			&i.Size,
-			&i.DistFromLocation,
-			&i.HeadingFromLocation,
-			&i.County,
-			&i.State,
-			&i.Latitude,
-			&i.Longitude,
-			&i.EventLocation,
-			&i.Comments,
-			&i.NwsOffice,
-			&i.Location,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getHailReportsByDate = `-- name: GetHailReportsByDate :many
-select rpt_type,
-       reported_time,
-       created_at,
-       "size",
-       dist_from_location,
-       heading_from_location,
-       county,
-       "state",
-       latitude,
-       longitude,
-       event_location,
-       comments,
-       nws_office,
-       location
-from hail_reports
+from reports
 where reported_time = $1
+  AND rpt_type = $2
 order by reported_time
 `
 
-func (q *Queries) GetHailReportsByDate(ctx context.Context, reportedTime pgtype.Timestamptz) ([]HailReport, error) {
-	rows, err := q.db.Query(ctx, getHailReportsByDate, reportedTime)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []HailReport
-	for rows.Next() {
-		var i HailReport
-		if err := rows.Scan(
-			&i.RptType,
-			&i.ReportedTime,
-			&i.CreatedAt,
-			&i.Size,
-			&i.DistFromLocation,
-			&i.HeadingFromLocation,
-			&i.County,
-			&i.State,
-			&i.Latitude,
-			&i.Longitude,
-			&i.EventLocation,
-			&i.Comments,
-			&i.NwsOffice,
-			&i.Location,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+type GetAllReportsByTypeByDateParams struct {
+	ReportedTime pgtype.Timestamptz
+	RptType      ReportType
 }
 
-const getHailReportsByState = `-- name: GetHailReportsByState :many
-select rpt_type,
-       reported_time,
-       created_at,
-       "size",
-       dist_from_location,
-       heading_from_location,
-       county,
-       "state",
-       latitude,
-       longitude,
-       event_location,
-       comments,
-       nws_office,
-       location
-from hail_reports
-where "state" = $1
-order by reported_time
-`
-
-func (q *Queries) GetHailReportsByState(ctx context.Context, state pgtype.Text) ([]HailReport, error) {
-	rows, err := q.db.Query(ctx, getHailReportsByState, state)
+func (q *Queries) GetAllReportsByTypeByDate(ctx context.Context, arg GetAllReportsByTypeByDateParams) ([]Report, error) {
+	rows, err := q.db.Query(ctx, getAllReportsByTypeByDate, arg.ReportedTime, arg.RptType)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []HailReport
+	var items []Report
 	for rows.Next() {
-		var i HailReport
+		var i Report
 		if err := rows.Scan(
 			&i.RptType,
 			&i.ReportedTime,
 			&i.CreatedAt,
-			&i.Size,
+			&i.VarCol,
 			&i.DistFromLocation,
 			&i.HeadingFromLocation,
 			&i.County,
@@ -417,7 +199,7 @@ select rpt_type,
 from reports
 where county = $1
     AND "state" = $2
-order by reported_time,rpt_type
+order by reported_time
 `
 
 type GetReportsByCountyAndStateParams struct {
@@ -477,7 +259,7 @@ select rpt_type,
        location
 from reports
 where "state" = $1
-order by reported_time,rpt_type
+order by reported_time
 `
 
 func (q *Queries) GetReportsByState(ctx context.Context, state pgtype.Text) ([]Report, error) {
@@ -515,11 +297,11 @@ func (q *Queries) GetReportsByState(ctx context.Context, state pgtype.Text) ([]R
 	return items, nil
 }
 
-const getTornadoReportsByCountyAndState = `-- name: GetTornadoReportsByCountyAndState :many
+const getReportsByType = `-- name: GetReportsByType :many
 select rpt_type,
        reported_time,
        created_at,
-       f_scale,
+       var_col,
        dist_from_location,
        heading_from_location,
        county,
@@ -530,31 +312,88 @@ select rpt_type,
        comments,
        nws_office,
        location
-from tornado_reports
+from reports
+where rpt_type = $1
+order by reported_time
+`
+
+func (q *Queries) GetReportsByType(ctx context.Context, rptType ReportType) ([]Report, error) {
+	rows, err := q.db.Query(ctx, getReportsByType, rptType)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Report
+	for rows.Next() {
+		var i Report
+		if err := rows.Scan(
+			&i.RptType,
+			&i.ReportedTime,
+			&i.CreatedAt,
+			&i.VarCol,
+			&i.DistFromLocation,
+			&i.HeadingFromLocation,
+			&i.County,
+			&i.State,
+			&i.Latitude,
+			&i.Longitude,
+			&i.EventLocation,
+			&i.Comments,
+			&i.NwsOffice,
+			&i.Location,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getReportsByTypeByCountyAndState = `-- name: GetReportsByTypeByCountyAndState :many
+select rpt_type,
+       reported_time,
+       created_at,
+       var_col,
+       dist_from_location,
+       heading_from_location,
+       county,
+       "state",
+       latitude,
+       longitude,
+       event_location,
+       comments,
+       nws_office,
+       location
+from reports
 where county = $1
     AND "state" = $2
+    AND rpt_type = $3
 order by reported_time
 `
 
-type GetTornadoReportsByCountyAndStateParams struct {
-	County string
-	State  pgtype.Text
+type GetReportsByTypeByCountyAndStateParams struct {
+	County  string
+	State   pgtype.Text
+	RptType ReportType
 }
 
-func (q *Queries) GetTornadoReportsByCountyAndState(ctx context.Context, arg GetTornadoReportsByCountyAndStateParams) ([]TornadoReport, error) {
-	rows, err := q.db.Query(ctx, getTornadoReportsByCountyAndState, arg.County, arg.State)
+func (q *Queries) GetReportsByTypeByCountyAndState(ctx context.Context, arg GetReportsByTypeByCountyAndStateParams) ([]Report, error) {
+	rows, err := q.db.Query(ctx, getReportsByTypeByCountyAndState, arg.County, arg.State, arg.RptType)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []TornadoReport
+	var items []Report
 	for rows.Next() {
-		var i TornadoReport
+		var i Report
 		if err := rows.Scan(
 			&i.RptType,
 			&i.ReportedTime,
 			&i.CreatedAt,
-			&i.FScale,
+			&i.VarCol,
 			&i.DistFromLocation,
 			&i.HeadingFromLocation,
 			&i.County,
@@ -576,11 +415,11 @@ func (q *Queries) GetTornadoReportsByCountyAndState(ctx context.Context, arg Get
 	return items, nil
 }
 
-const getTornadoReportsByDate = `-- name: GetTornadoReportsByDate :many
+const getReportsByTypeByState = `-- name: GetReportsByTypeByState :many
 select rpt_type,
        reported_time,
        created_at,
-       f_scale,
+       var_col,
        dist_from_location,
        heading_from_location,
        county,
@@ -591,251 +430,31 @@ select rpt_type,
        comments,
        nws_office,
        location
-from tornado_reports
-where reported_time = $1
-order by reported_time
-`
-
-func (q *Queries) GetTornadoReportsByDate(ctx context.Context, reportedTime pgtype.Timestamptz) ([]TornadoReport, error) {
-	rows, err := q.db.Query(ctx, getTornadoReportsByDate, reportedTime)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []TornadoReport
-	for rows.Next() {
-		var i TornadoReport
-		if err := rows.Scan(
-			&i.RptType,
-			&i.ReportedTime,
-			&i.CreatedAt,
-			&i.FScale,
-			&i.DistFromLocation,
-			&i.HeadingFromLocation,
-			&i.County,
-			&i.State,
-			&i.Latitude,
-			&i.Longitude,
-			&i.EventLocation,
-			&i.Comments,
-			&i.NwsOffice,
-			&i.Location,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getTornadoReportsByState = `-- name: GetTornadoReportsByState :many
-select rpt_type,
-       reported_time,
-       created_at,
-       f_scale,
-       dist_from_location,
-       heading_from_location,
-       county,
-       "state",
-       latitude,
-       longitude,
-       event_location,
-       comments,
-       nws_office,
-       location
-from tornado_reports
+from reports
 where "state" = $1
+    AND rpt_type = $2
 order by reported_time
 `
 
-func (q *Queries) GetTornadoReportsByState(ctx context.Context, state pgtype.Text) ([]TornadoReport, error) {
-	rows, err := q.db.Query(ctx, getTornadoReportsByState, state)
+type GetReportsByTypeByStateParams struct {
+	State   pgtype.Text
+	RptType ReportType
+}
+
+func (q *Queries) GetReportsByTypeByState(ctx context.Context, arg GetReportsByTypeByStateParams) ([]Report, error) {
+	rows, err := q.db.Query(ctx, getReportsByTypeByState, arg.State, arg.RptType)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []TornadoReport
+	var items []Report
 	for rows.Next() {
-		var i TornadoReport
+		var i Report
 		if err := rows.Scan(
 			&i.RptType,
 			&i.ReportedTime,
 			&i.CreatedAt,
-			&i.FScale,
-			&i.DistFromLocation,
-			&i.HeadingFromLocation,
-			&i.County,
-			&i.State,
-			&i.Latitude,
-			&i.Longitude,
-			&i.EventLocation,
-			&i.Comments,
-			&i.NwsOffice,
-			&i.Location,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getWindReportsByCountyAndState = `-- name: GetWindReportsByCountyAndState :many
-select rpt_type,
-       reported_time,
-       created_at,
-       speed,
-       dist_from_location,
-       heading_from_location,
-       county,
-       "state",
-       latitude,
-       longitude,
-       event_location,
-       comments,
-       nws_office,
-       location
-from wind_reports
-where county = $1
-    AND "state" = $2
-order by reported_time
-`
-
-type GetWindReportsByCountyAndStateParams struct {
-	County string
-	State  pgtype.Text
-}
-
-func (q *Queries) GetWindReportsByCountyAndState(ctx context.Context, arg GetWindReportsByCountyAndStateParams) ([]WindReport, error) {
-	rows, err := q.db.Query(ctx, getWindReportsByCountyAndState, arg.County, arg.State)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []WindReport
-	for rows.Next() {
-		var i WindReport
-		if err := rows.Scan(
-			&i.RptType,
-			&i.ReportedTime,
-			&i.CreatedAt,
-			&i.Speed,
-			&i.DistFromLocation,
-			&i.HeadingFromLocation,
-			&i.County,
-			&i.State,
-			&i.Latitude,
-			&i.Longitude,
-			&i.EventLocation,
-			&i.Comments,
-			&i.NwsOffice,
-			&i.Location,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getWindReportsByDate = `-- name: GetWindReportsByDate :many
-select rpt_type,
-       reported_time,
-       created_at,
-       speed,
-       dist_from_location,
-       heading_from_location,
-       county,
-       "state",
-       latitude,
-       longitude,
-       event_location,
-       comments,
-       nws_office,
-       location
-from wind_reports
-where reported_time = $1
-order by reported_time
-`
-
-func (q *Queries) GetWindReportsByDate(ctx context.Context, reportedTime pgtype.Timestamptz) ([]WindReport, error) {
-	rows, err := q.db.Query(ctx, getWindReportsByDate, reportedTime)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []WindReport
-	for rows.Next() {
-		var i WindReport
-		if err := rows.Scan(
-			&i.RptType,
-			&i.ReportedTime,
-			&i.CreatedAt,
-			&i.Speed,
-			&i.DistFromLocation,
-			&i.HeadingFromLocation,
-			&i.County,
-			&i.State,
-			&i.Latitude,
-			&i.Longitude,
-			&i.EventLocation,
-			&i.Comments,
-			&i.NwsOffice,
-			&i.Location,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getWindReportsByState = `-- name: GetWindReportsByState :many
-select rpt_type,
-       reported_time,
-       created_at,
-       speed,
-       dist_from_location,
-       heading_from_location,
-       county,
-       "state",
-       latitude,
-       longitude,
-       event_location,
-       comments,
-       nws_office,
-       location
-from wind_reports
-where "state" = $1
-order by reported_time
-`
-
-func (q *Queries) GetWindReportsByState(ctx context.Context, state pgtype.Text) ([]WindReport, error) {
-	rows, err := q.db.Query(ctx, getWindReportsByState, state)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []WindReport
-	for rows.Next() {
-		var i WindReport
-		if err := rows.Scan(
-			&i.RptType,
-			&i.ReportedTime,
-			&i.CreatedAt,
-			&i.Speed,
+			&i.VarCol,
 			&i.DistFromLocation,
 			&i.HeadingFromLocation,
 			&i.County,

@@ -3,11 +3,12 @@ insert into reports (rpt_type, reported_time, created_at, var_col, dist_from_loc
                      "state", latitude, longitude, event_location, comments, nws_office, location)
 values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14);
 
--- name: GetWindReportsByDate :many
+
+-- name: GetAllReportsByTypeByDate :many
 select rpt_type,
        reported_time,
        created_at,
-       speed,
+       var_col,
        dist_from_location,
        heading_from_location,
        county,
@@ -18,15 +19,19 @@ select rpt_type,
        comments,
        nws_office,
        location
-from wind_reports
+from reports
 where reported_time = $1
+  AND rpt_type = $2
 order by reported_time;
 
--- name: GetWindReportsByCountyAndState :many
+
+
+
+-- name: GetReportsByTypeByCountyAndState :many
 select rpt_type,
        reported_time,
        created_at,
-       speed,
+       var_col,
        dist_from_location,
        heading_from_location,
        county,
@@ -37,16 +42,17 @@ select rpt_type,
        comments,
        nws_office,
        location
-from wind_reports
+from reports
 where county = $1
     AND "state" = $2
+    AND rpt_type = $3
 order by reported_time;
 
--- name: GetWindReportsByState :many
+-- name: GetReportsByTypeByState :many
 select rpt_type,
        reported_time,
        created_at,
-       speed,
+       var_col,
        dist_from_location,
        heading_from_location,
        county,
@@ -57,16 +63,17 @@ select rpt_type,
        comments,
        nws_office,
        location
-from wind_reports
+from reports
 where "state" = $1
+    AND rpt_type = $2
 order by reported_time;
 
 
--- name: GetAllWindReports :many
+-- name: GetReportsByType :many
 select rpt_type,
        reported_time,
        created_at,
-       speed,
+       var_col,
        dist_from_location,
        heading_from_location,
        county,
@@ -77,147 +84,10 @@ select rpt_type,
        comments,
        nws_office,
        location
-from wind_reports
+from reports
+where rpt_type = $1
 order by reported_time;
 
-
-
--- name: GetHailReportsByDate :many
-select rpt_type,
-       reported_time,
-       created_at,
-       "size",
-       dist_from_location,
-       heading_from_location,
-       county,
-       "state",
-       latitude,
-       longitude,
-       event_location,
-       comments,
-       nws_office,
-       location
-from hail_reports
-where reported_time = $1
-order by reported_time;
-
--- name: GetHailReportsByCountyAndState :many
-select rpt_type,
-       reported_time,
-       created_at,
-       "size",
-       dist_from_location,
-       heading_from_location,
-       county,
-       "state",
-       latitude,
-       longitude,
-       event_location,
-       comments,
-       nws_office,
-       location
-from hail_reports
-where county = $1
-    AND "state" = $2
-order by reported_time;
-
--- name: GetHailReportsByState :many
-select rpt_type,
-       reported_time,
-       created_at,
-       "size",
-       dist_from_location,
-       heading_from_location,
-       county,
-       "state",
-       latitude,
-       longitude,
-       event_location,
-       comments,
-       nws_office,
-       location
-from hail_reports
-where "state" = $1
-order by reported_time;
-
-
--- name: GetAllHailReports :many
-select rpt_type,
-       reported_time,
-       created_at,
-       "size",
-       dist_from_location,
-       heading_from_location,
-       county,
-       "state",
-       latitude,
-       longitude,
-       event_location,
-       comments,
-       nws_office,
-       location
-from hail_reports
-order by reported_time;
-
-
-
--- name: GetTornadoReportsByDate :many
-select rpt_type,
-       reported_time,
-       created_at,
-       f_scale,
-       dist_from_location,
-       heading_from_location,
-       county,
-       "state",
-       latitude,
-       longitude,
-       event_location,
-       comments,
-       nws_office,
-       location
-from tornado_reports
-where reported_time = $1
-order by reported_time;
-
--- name: GetTornadoReportsByCountyAndState :many
-select rpt_type,
-       reported_time,
-       created_at,
-       f_scale,
-       dist_from_location,
-       heading_from_location,
-       county,
-       "state",
-       latitude,
-       longitude,
-       event_location,
-       comments,
-       nws_office,
-       location
-from tornado_reports
-where county = $1
-    AND "state" = $2
-order by reported_time;
-
--- name: GetTornadoReportsByState :many
-select rpt_type,
-       reported_time,
-       created_at,
-       f_scale,
-       dist_from_location,
-       heading_from_location,
-       county,
-       "state",
-       latitude,
-       longitude,
-       event_location,
-       comments,
-       nws_office,
-       location
-from tornado_reports
-where "state" = $1
-order by reported_time;
 
 
 -- name: GetAllReportsByDate :many
@@ -237,8 +107,7 @@ select rpt_type,
        location
 from reports
 where reported_time = $1
-order by reported_time, rpt_type;
-
+order by reported_time;
 
 
 
@@ -260,7 +129,7 @@ select rpt_type,
 from reports
 where county = $1
     AND "state" = $2
-order by reported_time,rpt_type;
+order by reported_time;
 
 -- name: GetReportsByState :many
 select rpt_type,
@@ -279,7 +148,7 @@ select rpt_type,
        location
 from reports
 where "state" = $1
-order by reported_time,rpt_type;
+order by reported_time;
 
 
 -- name: GetAllReports :many
@@ -298,4 +167,5 @@ select rpt_type,
        nws_office,
        location
 from reports
-order by reported_time,rpt_type;
+order by reported_time;
+
