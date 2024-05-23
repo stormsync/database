@@ -1,0 +1,1 @@
+Drop View if exists hail_reports;
